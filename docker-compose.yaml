@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  challenge-cleanarch:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8086"
+    platform: linux/amd64
+    networks:
+      - challenge-cleanarch-network
+    depends_on:
+      - database-challenge-cleanarch
+    env_file:
+      - .env
+
+  database-challenge-cleanarch:
+    image: postgres:14.1
+    container_name: database-challenge-cleanarch-container
+    platform: linux/amd64
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5436:5432"
+    networks:
+      - challenge-cleanarch-network
+
+networks:
+  challenge-cleanarch-network:
+    driver: bridge
+
+volumes:
+  database-challenge-cleanarch:
