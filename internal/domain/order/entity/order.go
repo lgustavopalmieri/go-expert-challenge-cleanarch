@@ -15,19 +15,19 @@ type Order struct {
 	CreatedAt  string
 }
 
-func (o *Order) NewOrder(price, tax float64) (*Order, error) {
+func NewOrder(price, tax float64) (*Order, error) {
 	currentTime := time.Now()
 	order := &Order{
-		OrderID:    uuid.New().String(),
-		Price:      price,
-		Tax:        tax,
-		FinalPrice: o.CalculateFinalPrice(),
-		CreatedAt:  currentTime.Format("0000-00-00T00:00:00"),
+		OrderID:   uuid.New().String(),
+		Price:     price,
+		Tax:       tax,
+		CreatedAt: currentTime.Format("0000-00-00T00:00:00"),
 	}
 	err := order.Validate()
 	if err != nil {
 		return nil, err
 	}
+	order.CalculateFinalPrice()
 	return order, nil
 }
 
