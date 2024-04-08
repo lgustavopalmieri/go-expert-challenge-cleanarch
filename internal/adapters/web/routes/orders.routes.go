@@ -11,4 +11,5 @@ import (
 func SetupOrdersRoutes(s *server.WebServer, db *sql.DB) {
 	webOrderHandler := orders.NewWebOrderHandler(db)
 	s.AddHandler("/orders/create", webOrderHandler.Create)
+	s.AddHandler("/orders/list", webOrderHandler.ListOrders)
 }

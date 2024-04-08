@@ -2,7 +2,7 @@ package orderdb
 
 import "github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/domain/order/entity"
 
-const query = `INSERT INTO orders (
+const querySave = `INSERT INTO orders (
 	order_id,
 	price,
 	tax,
@@ -10,7 +10,7 @@ const query = `INSERT INTO orders (
 ) VALUES ($1, $2, $3, $4)`
 
 func (r *OrderRepositoyDb) Save(order *entity.Order) error {
-	stmt, err := r.Db.Prepare(query)
+	stmt, err := r.Db.Prepare(querySave)
 	if err != nil {
 		return err
 	}

@@ -13,3 +13,9 @@ func NewCreateOrderUseCase(db *sql.DB) *usecase.CreateOrderUseCase {
 	createOrderUseCase := usecase.NewCreateOrderUseCase(orderRepository)
 	return createOrderUseCase
 }
+
+func NewListOrdersUseCase(db *sql.DB) *usecase.ListOrdersUseCase {
+	orderRepository := orderdb.NewOrderRepositoryDb(db)
+	listOrdersUseCase := usecase.NewListOrdersUseCase(orderRepository)
+	return listOrdersUseCase
+}
