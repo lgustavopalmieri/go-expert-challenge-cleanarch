@@ -24,7 +24,7 @@ WORKDIR /app
 
 COPY --from=builder /app/main .
 COPY .env .    
-COPY internal/database/postgres/sql/migrations ./internal/database/postgres/sql/migrations
+COPY sql/migrations ./sql/migrations
 
 EXPOSE 8086
 CMD [ "/app/main" ]

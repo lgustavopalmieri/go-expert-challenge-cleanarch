@@ -21,7 +21,7 @@ func NewOrder(price, tax float64) (*Order, error) {
 		OrderID:   uuid.New().String(),
 		Price:     price,
 		Tax:       tax,
-		CreatedAt: currentTime.Format("0000-00-00T00:00:00"),
+		CreatedAt: currentTime.Format("2006-01-02T15:04:05"),
 	}
 	err := order.Validate()
 	if err != nil {
