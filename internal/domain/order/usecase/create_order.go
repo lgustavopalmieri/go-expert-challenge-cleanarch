@@ -6,10 +6,10 @@ import (
 )
 
 type CreateOrderUseCase struct {
-	OrderRepository repository.OrderRepository
+	OrderRepository repository.OrderRepositoryInterface
 }
 
-func NewCreateOrderUseCase(orderRepository repository.OrderRepository) *CreateOrderUseCase {
+func NewCreateOrderUseCase(orderRepository repository.OrderRepositoryInterface) *CreateOrderUseCase {
 	return &CreateOrderUseCase{
 		OrderRepository: orderRepository,
 	}
@@ -41,10 +41,10 @@ func (uc *CreateOrderUseCase) Execute(input CreateOrderInputDTO) (*CreateOrderOu
 		return nil, err
 	}
 	return &CreateOrderOutputDTO{
-		OrderID: order.OrderID,
-		Price: order.Price,
-		Tax: order.Tax,
+		OrderID:    order.OrderID,
+		Price:      order.Price,
+		Tax:        order.Tax,
 		FinalPrice: order.FinalPrice,
-		CreatedAt: order.CreatedAt,
+		CreatedAt:  order.CreatedAt,
 	}, nil
 }

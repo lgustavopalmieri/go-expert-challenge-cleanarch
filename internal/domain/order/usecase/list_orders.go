@@ -7,10 +7,10 @@ import (
 )
 
 type ListOrdersUseCase struct {
-	OrderRepository repository.OrderRepository
+	OrderRepository repository.OrderRepositoryInterface
 }
 
-func NewListOrdersUseCase(orderRepository repository.OrderRepository) *ListOrdersUseCase {
+func NewListOrdersUseCase(orderRepository repository.OrderRepositoryInterface) *ListOrdersUseCase {
 	return &ListOrdersUseCase{
 		OrderRepository: orderRepository,
 	}
