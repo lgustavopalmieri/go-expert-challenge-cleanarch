@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -53,7 +52,6 @@ func main() {
 }
 
 func runDBMigration(migrationURL string, dbSource string) {
-	time.Sleep(10 * time.Second)
 	migration, err := migrate.New(migrationURL, dbSource)
 	if err != nil {
 		log.Fatal("cannot create new migrate instance: ", err)
