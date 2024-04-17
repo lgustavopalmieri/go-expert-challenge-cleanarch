@@ -3,9 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"sync"
 
-	"github.com/lgustavopalmieri/events/pkg/events"
+	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/pkg/events"
 	"github.com/streadway/amqp"
 )
 
@@ -30,10 +31,11 @@ func (h *OrderCreatedHandler) Handle(event events.EventInterface, wg *sync.WaitG
 	}
 
 	h.RabbitMQChannel.Publish(
-		"amq.direct", // exchange
-		"",           // key name
-		false,        // mandatory
-		false,        // immediate
-		msgRabbitmq,  // message to publish
+		"OrderCreated", // exchange
+		"OrderCreated", // key name
+		false,          // mandatory
+		false,          // immediate
+		msgRabbitmq,    // message to publish
 	)
+	log.Println(msgRabbitmq.Body)
 }

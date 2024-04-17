@@ -10,8 +10,12 @@ services:
     platform: linux/amd64
     networks:
       - challenge-cleanarch-network
+      - rabbitmq-network
     depends_on:
-      - database-challenge-cleanarch
+      rabbitmq:
+        condition: service_healthy
+      database-challenge-cleanarch:
+        condition: service_started
     env_file:
       - .env
 
@@ -35,17 +39,26 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
     restart: always
+    networks:
+      - rabbitmq-network
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
 
 networks:
   challenge-cleanarch-network:
+    driver: bridge
+
+  rabbitmq-network:
     driver: bridge
 
 volumes:

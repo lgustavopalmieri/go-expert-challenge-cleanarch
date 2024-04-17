@@ -3,15 +3,21 @@ package usecase
 import (
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/domain/order/entity"
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/domain/order/repository"
+	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/pkg/events"
 )
 
 type CreateOrderUseCase struct {
 	OrderRepository repository.OrderRepositoryInterface
+	OrderCreated    events.EventInterface
+	EventDispatcher events.EventDispatcherInterface
 }
 
-func NewCreateOrderUseCase(orderRepository repository.OrderRepositoryInterface) *CreateOrderUseCase {
+func NewCreateOrderUseCase(orderRepository repository.OrderRepositoryInterface, OrderCreated events.EventInterface,
+	EventDispatcher events.EventDispatcherInterface) *CreateOrderUseCase {
 	return &CreateOrderUseCase{
 		OrderRepository: orderRepository,
+		OrderCreated:    OrderCreated,
+		EventDispatcher: EventDispatcher,
 	}
 }
 
@@ -40,11 +46,15 @@ func (uc *CreateOrderUseCase) Execute(input CreateOrderInputDTO) (*CreateOrderOu
 	if err != nil {
 		return nil, err
 	}
-	return &CreateOrderOutputDTO{
+	dto := &CreateOrderOutputDTO{
 		OrderID:    order.OrderID,
 		Price:      order.Price,
 		Tax:        order.Tax,
 		FinalPrice: order.FinalPrice,
 		CreatedAt:  order.CreatedAt,
-	}, nil
+	}
+	uc.OrderCreated.SetPayload(dto)
+	uc.EventDispatcher.Dispatch(uc.OrderCreated)
+
+	return dto, nil
 }
