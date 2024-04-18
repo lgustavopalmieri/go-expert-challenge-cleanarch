@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8086:8086"
+      - "50051:50051"
+      - "8181:8181"
     platform: linux/amd64
     networks:
       - challenge-cleanarch-network

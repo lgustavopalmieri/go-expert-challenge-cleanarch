@@ -4,11 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net"
 
 	// "github.com/golang-migrate/migrate/v4"
 	// _ "github.com/golang-migrate/migrate/v4/database/postgres"
 	// _ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/configs"
+	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/adapters/di/usecase/order"
+	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/adapters/grpc/order/orderpb"
+	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/adapters/grpc/order/service"
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/adapters/web/routes"
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/adapters/web/server"
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/domain/order/event/handler"
@@ -17,6 +21,8 @@ import (
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/logs"
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/pkg/events"
 	"github.com/streadway/amqp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	_ "github.com/lib/pq"
 )
@@ -31,7 +37,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 
 	postgresdb.RunPostgresMigrations(cfg.MigrationURL, cfg.DBSource)
 
@@ -53,6 +58,20 @@ func main() {
 	routes.SetupOrdersRoutes(webserver, db, eventDispatcher)
 
 	go webserver.Start()
+
+	createOrderUseCase := order.NewCreateOrderUseCase(db, eventDispatcher)
+	orderListUseCase := order.NewListOrdersUseCase(db)
+	grpcServer := grpc.NewServer()
+	createOrderService := service.NewOrderService(*createOrderUseCase, *orderListUseCase)
+	orderpb.RegisterOrderServiceServer(grpcServer, createOrderService)
+	reflection.Register(grpcServer)
+
+	fmt.Println("Starting gRPC server on port", cfg.GRPCServerPort)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", cfg.GRPCServerPort))
+	if err != nil {
+		panic(err)
+	}
+	go grpcServer.Serve(lis)
 
 	select {}
 }
