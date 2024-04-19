@@ -1,8 +1,8 @@
-### go-expert-challenge-cleanarch
+# go-expert-challenge-cleanarch
 
 Este é o código do desafio do módulo Go Expert: Clean Architecture.
 
-### rest
+## rest
 
 O serviço rest roda na porta 8086.
 Para utilizá-lo você pode acessar na pasta "api" os dois endpoints, ou se optar por outra ferramenta:
@@ -17,7 +17,7 @@ Content-Type: application/json
 GET http://localhost:8086/orders/list HTTP/1.1
 Content-Type: application/json
 
-### grpc
+## grpc
 
 Para utilizar o serviço grpc é preciso ter o evans instalado.
 
@@ -31,7 +31,7 @@ service OrderService
 call CreateOrder
 call ListOrders
 
-### graphql
+## graphql
 
 Para utilizar o serviço graphql basta entrar em http://localhost:8282/ e colar:
 
