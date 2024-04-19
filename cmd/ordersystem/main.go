@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 
-	// "github.com/golang-migrate/migrate/v4"
-	// _ "github.com/golang-migrate/migrate/v4/database/postgres"
-	// _ "github.com/golang-migrate/migrate/v4/source/file"
+	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/configs"
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/adapters/di/usecase/order"
+	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/adapters/graphql/graph"
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/adapters/grpc/order/orderpb"
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/adapters/grpc/order/service"
 	"github.com/lgustavopalmieri/go-expert-challenge-cleanarch/internal/adapters/web/routes"
@@ -61,6 +62,7 @@ func main() {
 
 	createOrderUseCase := order.NewCreateOrderUseCase(db, eventDispatcher)
 	orderListUseCase := order.NewListOrdersUseCase(db)
+
 	grpcServer := grpc.NewServer()
 	createOrderService := service.NewOrderService(*createOrderUseCase, *orderListUseCase)
 	orderpb.RegisterOrderServiceServer(grpcServer, createOrderService)
@@ -73,7 +75,17 @@ func main() {
 	}
 	go grpcServer.Serve(lis)
 
-	select {}
+	srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		CreateOrderUseCase: *createOrderUseCase,
+		ListOrdersUseCase:  *orderListUseCase,
+	}}))
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+
+	fmt.Println("Starting GraphQL server on port", cfg.GraphQLServerPort)
+	http.ListenAndServe(":"+cfg.GraphQLServerPort, nil)
+
+	// select {}
 }
 
 func getRabbitMQChannel() *amqp.Channel {
