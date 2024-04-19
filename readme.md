@@ -1,3 +1,7 @@
+### go-expert-challenge-cleanarch
+
+Este é o código do desafio do módulo Go Expert: Clean Architecture.
+
 ### rest
 
 O serviço rest roda na porta 8086.
